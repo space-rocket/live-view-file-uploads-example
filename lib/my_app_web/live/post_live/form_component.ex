@@ -13,6 +13,10 @@ defmodule MyAppWeb.PostLive.FormComponent do
      |> assign(:changeset, changeset)}
   end
 
+  def handle_event("validate", _params, socket) do
+    {:noreply, socket}
+  end
+
   @impl true
   def handle_event("validate", %{"post" => post_params}, socket) do
     changeset =
@@ -51,5 +55,15 @@ defmodule MyAppWeb.PostLive.FormComponent do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
     end
+  end
+
+  def handle_event("save", _params, socket) do
+    uploaded_files =
+      consume_uploaded_entries(socket, :avatar, fn %{path: path}, _entry ->
+        dest = Path.join("priv/static/uploads", Path.basename(path))
+        File.cp!(path, dest)
+        Routes.static_path(socket, "/uploads/#{Path.basename(dest)}")
+      end)
+    {:noreply, update(socket, :uploaded_files, &(&1 ++ uploaded_files))}
   end
 end

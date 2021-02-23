@@ -6,7 +6,12 @@ defmodule MyAppWeb.PostLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :posts, list_posts())}
+    {:ok,
+      socket
+      |> assign(:posts, list_posts())
+      |> assign(:uploaded_files, [])
+      |> allow_upload(:avatar, accept: ~w(.jpg .jpeg .png), max_entries: 2)
+    }
   end
 
   @impl true

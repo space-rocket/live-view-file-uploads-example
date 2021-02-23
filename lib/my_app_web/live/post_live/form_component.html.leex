@@ -10,5 +10,14 @@
   <%= text_input f, :avatar %>
   <%= error_tag f, :avatar %>
 
+	<%= for entry <- @uploads.avatar.entries do %>
+	<%= entry.client_name %> - <%= entry.progress %>%
+	<% end %>
+
+	<form phx-submit="save" phx-change="validate">
+	  <%= live_file_input @uploads.avatar %>
+	  <button type="submit">Upload</button>
+	</form>
+
   <%= submit "Save", phx_disable_with: "Saving..." %>
 </form>
